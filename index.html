@@ -16,7 +16,6 @@
       html, body {
         height: 100%;
         width: 100%;
-        overflow: hidden;
       }
 
       body {
@@ -29,77 +28,102 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 20px;
       }
 
-      .container {
+      .app {
         width: 100%;
         height: 100%;
         max-width: 1200px;
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 16px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        border-radius: 16px;
+        border-radius: 12px;
         overflow: hidden;
         background: #ffffff;
       }
 
+      /* Header across both columns */
       .header {
+        grid-column: 1 / -1;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 24px 32px;
+        padding: 16px 20px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
       }
 
-      .header-content {
+      .header-left {
         display: flex;
         align-items: center;
         gap: 12px;
       }
 
-      .header-icon {
-        font-size: 28px;
-        animation: pulse 2s ease-in-out infinite;
-      }
+      .header-icon { font-size: 22px; }
+      .header h1 { font-size: 18px; margin: 0; }
+      .header p { font-size: 12px; opacity: 0.95; margin: 0; }
 
-      .header-text h1 {
-        font-size: 24px;
-        font-weight: 700;
-        margin: 0;
-      }
-
-      .header-text p {
-        font-size: 12px;
-        opacity: 0.9;
-        margin-top: 2px;
-      }
-
-      .status-badge {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 500;
+      .ai-select {
         display: flex;
+        gap: 8px;
         align-items: center;
-        gap: 6px;
       }
 
-      .status-dot {
-        width: 8px;
-        height: 8px;
-        background: #4ade80;
-        border-radius: 50%;
-        animation: blink 2s ease-in-out infinite;
+      select, button, .btn {
+        appearance: none;
+        border: none;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+      }
+
+      select { background: rgba(255,255,255,0.16); color: white; }
+
+      .sidebar {
+        padding: 12px;
+        border-right: 1px solid #eef2ff;
+        background: linear-gradient(180deg, #fbfdff 0%, #f7f8fb 100%);
+        overflow-y: auto;
+      }
+
+      .sidebar-top { display:flex; gap:8px; margin-bottom: 12px; }
+
+      .conversations {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .conv-item {
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:8px;
+        box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+      }
+
+      .conv-item.active { background: linear-gradient(90deg,#667eea,#764ba2); color: white; }
+
+      .conv-title { font-size: 14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .conv-meta { font-size: 11px; color:#667085 }
+
+      .main {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
       }
 
       .chat-wrapper {
         flex: 1;
-        display: flex;
-        overflow: hidden;
         position: relative;
+        background: #fff;
       }
 
       iframe {
@@ -109,71 +133,280 @@
         display: block;
       }
 
+      .notes {
+        padding: 10px 14px;
+        border-top: 1px solid #eef2ff;
+        background: #fbfdff;
+        display:flex;
+        gap:8px;
+        align-items:flex-start;
+      }
+
+      .notes textarea { flex:1; min-height:64px; padding:8px; border-radius:8px; border:1px solid #e6edf5 }
+
       .footer {
-        background: #f8f9fa;
-        padding: 12px 24px;
-        border-top: 1px solid #e9ecef;
+        grid-column: 1 / -1;
         font-size: 12px;
         color: #6c757d;
+        padding: 10px 14px;
         text-align: center;
+        background: linear-gradient(180deg,#ffffff00,#ffffff00);
       }
 
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.6; }
+      .small { font-size: 12px }
+
+      .controls { display:flex; gap:8px; align-items:center }
+
+      .muted { color:#98a0b3 }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .app { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
+        .sidebar { order: 2; border-right: none; border-top: 1px solid #eef2ff }
+        .chat-wrapper { order: 1; height: 60vh }
       }
 
-      @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.3; }
-      }
-
-      /* 반응형 디자인 */
-      @media (max-width: 768px) {
-        .header {
-          padding: 16px 20px;
-        }
-
-        .header-text h1 {
-          font-size: 18px;
-        }
-
-        .container {
-          border-radius: 0;
-        }
-      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <!-- 헤더 -->
+    <div class="app" id="app">
       <div class="header">
-        <div class="header-content">
+        <div class="header-left">
           <div class="header-icon">🤖</div>
-          <div class="header-text">
+          <div>
             <h1>AI 어시스턴트</h1>
-            <p>24/7 스마트 채팅 서비스</p>
+            <p class="small">24/7 스마트 채팅 서비스</p>
           </div>
         </div>
-        <div class="status-badge">
-          <div class="status-dot"></div>
-          <span>온라인</span>
+
+        <div class="ai-select">
+          <label for="aiSelect" class="muted small">AI 선택</label>
+          <select id="aiSelect" title="Select AI model"></select>
+          <div class="controls">
+            <button class="btn" id="newConvBtn" title="새 대화 (Ctrl/Cmd+N)">새 대화</button>
+            <button class="btn" id="exportBtn" title="대화 내보내기">내보내기</button>
+            <button class="btn" id="importBtn" title="대화 가져오기">가져오기</button>
+          </div>
         </div>
       </div>
 
-      <!-- 챗봇 iframe -->
-      <div class="chat-wrapper">
-        <iframe 
-          src="https://copilotstudio.microsoft.com/environments/9324e73a-cd4e-e049-b7ba-177af6165e9c/bots/cr470_multimodelaiagent_smENVx/webchat?__version__=2&enableFileAttachment=false&cliAgent=true"
-          title="AI Chatbot"
-          allow="microphone; camera">
-        </iframe>
-      </div>
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <strong>대화 목록</strong>
+          <div style="margin-left:auto; font-size:12px; color:#94a3b8">저장: 로컬</div>
+        </div>
+        <div class="conversations" id="conversations"></div>
+      </aside>
 
-      <!-- 푸터 -->
-      <div class="footer">
-        ✨ 최신 AI 기술로 구동되는 스마트 어시스턴트 | 모든 대화는 안전하게 보호됩니다
-      </div>
+      <main class="main">
+        <div class="chat-wrapper">
+          <iframe id="chatFrame"
+            src="https://copilotstudio.microsoft.com/environments/9324e73a-cd4e-e049-b7ba-177af6165e9c/bots/cr470_multimodelaiagent_smENVx/webchat?__version__=2&enableFileAttachment=false&cliAgent=true"
+            title="AI Chatbot"
+            allow="microphone; camera">
+          </iframe>
+        </div>
+
+        <div class="notes">
+          <div style="width:100%">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px">
+              <div class="muted">대화 요약 / 개인 노트</div>
+              <div class="small muted">자동저장</div>
+            </div>
+            <textarea id="convNotes" placeholder="이 대화에 대한 메모를 남길 수 있습니다."></textarea>
+          </div>
+        </div>
+      </main>
+
+      <div class="footer">✨ 최신 AI 기술로 구동되는 스마트 어시스턴트 | 모든 대화는 기기에 로컬로 저장됩니다</div>
     </div>
+
+    <input id="filePicker" type="file" accept="application/json" style="display:none" />
+
+    <script>
+      (function(){
+        // Storage keys
+        const STORAGE_KEY = 'ai_chat_conversations_v1';
+        const SETTINGS_KEY = 'ai_chat_settings_v1';
+
+        // Default AI options (modify these to your available environments)
+        const AI_OPTIONS = [
+          { id: 'copilot_default', name: 'Copilot (기본)', src: 'https://copilotstudio.microsoft.com/environments/9324e73a-cd4e-e049-b7ba-177af6165e9c/bots/cr470_multimodelaiagent_smENVx/webchat?__version__=2&enableFileAttachment=false&cliAgent=true' },
+          // Example placeholders - replace with your other bot URLs if available
+          { id: 'multimodel_a', name: 'Model A', src: 'https://copilotstudio.microsoft.com/environments/9324e73a-cd4e-e049-b7ba-177af6165e9c/bots/cr470_multimodelaiagent_smENVx/webchat?__version__=2&variant=A' },
+          { id: 'multimodel_b', name: 'Model B', src: 'https://copilotstudio.microsoft.com/environments/9324e73a-cd4e-e049-b7ba-177af6165e9c/bots/cr470_multimodelaiagent_smENVx/webchat?__version__=2&variant=B' }
+        ];
+
+        // DOM refs
+        const aiSelect = document.getElementById('aiSelect');
+        const conversationsEl = document.getElementById('conversations');
+        const newConvBtn = document.getElementById('newConvBtn');
+        const chatFrame = document.getElementById('chatFrame');
+        const convNotes = document.getElementById('convNotes');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const filePicker = document.getElementById('filePicker');
+
+        // app state
+        let settings = loadSettings();
+        let conversations = loadConversations();
+        let currentId = settings.currentConversationId || (conversations[0] && conversations[0].id) || null;
+
+        function loadSettings(){
+          try { return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); } catch(e){ return {}; }
+        }
+        function saveSettings(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+
+        function loadConversations(){
+          try { const v = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); if(Array.isArray(v) && v.length) return v; }
+          catch(e){}
+          // default
+          const defaultConv = { id: genId(), title: '새 대화', createdAt: Date.now(), updatedAt: Date.now(), notes: '' };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify([defaultConv]));
+          return [defaultConv];
+        }
+
+        function saveConversations(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations)); }
+
+        function genId(){ return (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'conv_' + Date.now() + '_' + Math.floor(Math.random()*10000); }
+
+        function renderAIOptions(){
+          aiSelect.innerHTML = '';
+          AI_OPTIONS.forEach(opt => {
+            const o = document.createElement('option'); o.value = opt.id; o.textContent = opt.name; aiSelect.appendChild(o);
+          });
+          // restore
+          if(!settings.selectedAI) settings.selectedAI = AI_OPTIONS[0].id;
+          aiSelect.value = settings.selectedAI;
+        }
+
+        function renderConversations(){
+          conversationsEl.innerHTML = '';
+          conversations.forEach(conv => {
+            const div = document.createElement('div');
+            div.className = 'conv-item' + (conv.id === currentId ? ' active' : '');
+            div.dataset.id = conv.id;
+            const left = document.createElement('div'); left.style.flex = '1';
+            const title = document.createElement('div'); title.className = 'conv-title'; title.textContent = conv.title || '무제';
+            const meta = document.createElement('div'); meta.className = 'conv-meta'; meta.textContent = new Date(conv.updatedAt).toLocaleString();
+            left.appendChild(title); left.appendChild(meta);
+            const right = document.createElement('div');
+            const more = document.createElement('div'); more.className = 'small muted'; more.textContent = '…'; more.title='더보기'; more.style.cursor='pointer';
+            right.appendChild(more);
+
+            div.appendChild(left); div.appendChild(right);
+
+            div.addEventListener('click', ()=>{ selectConversation(conv.id); });
+            more.addEventListener('click', (e)=>{ e.stopPropagation(); showConvMenu(conv); });
+
+            conversationsEl.appendChild(div);
+          });
+        }
+
+        function showConvMenu(conv){
+          const name = prompt('대화 이름 변경', conv.title || '');
+          if(name === null) return;
+          conv.title = name.trim() || conv.title;
+          conv.updatedAt = Date.now();
+          saveConversations(); renderConversations();
+          if(conv.id === currentId) showNotesFor(conv.id);
+        }
+
+        function selectConversation(id){
+          currentId = id;
+          settings.currentConversationId = id; saveSettings();
+          renderConversations();
+          showNotesFor(id);
+          updateIframe();
+        }
+
+        function showNotesFor(id){
+          const conv = conversations.find(c=>c.id===id);
+          convNotes.value = conv && conv.notes ? conv.notes : '';
+        }
+
+        function createConversation(name){
+          const conv = { id: genId(), title: name || '대화 ' + (conversations.length+1), createdAt: Date.now(), updatedAt: Date.now(), notes: '' };
+          conversations.unshift(conv);
+          saveConversations();
+          selectConversation(conv.id);
+          renderConversations();
+        }
+
+        // update iframe src based on selected AI and current conversation
+        function updateIframe(){
+          const sel = AI_OPTIONS.find(a=>a.id === settings.selectedAI) || AI_OPTIONS[0];
+          const conv = conversations.find(c=>c.id===currentId) || {};
+          let src = sel.src;
+          // append conversation meta so external chat can use it if it supports query params
+          const params = new URLSearchParams();
+          if(currentId) params.set('conversation_id', currentId);
+          if(conv.title) params.set('conversation_title', conv.title);
+          // keep original params
+          if(src.indexOf('?')===-1) src += '?' + params.toString(); else src += '&' + params.toString();
+          chatFrame.src = src;
+        }
+
+        // events
+        aiSelect.addEventListener('change', ()=>{
+          settings.selectedAI = aiSelect.value; saveSettings(); updateIframe();
+        });
+
+        newConvBtn.addEventListener('click', ()=>{
+          const name = prompt('새 대화 이름을 입력하세요', '새 대화');
+          if(name !== null) createConversation(name.trim());
+        });
+
+        convNotes.addEventListener('input', ()=>{
+          const conv = conversations.find(c=>c.id===currentId);
+          if(!conv) return;
+          conv.notes = convNotes.value;
+          conv.updatedAt = Date.now();
+          saveConversations(); renderConversations();
+        });
+
+        exportBtn.addEventListener('click', ()=>{ exportAll(); });
+        importBtn.addEventListener('click', ()=>{ filePicker.click(); });
+
+        filePicker.addEventListener('change', (e)=>{
+          const file = e.target.files && e.target.files[0];
+          if(!file) return;
+          const reader = new FileReader();
+          reader.onload = ()=>{ try { const data = JSON.parse(reader.result); if(Array.isArray(data)) { conversations = data; saveConversations(); alert('대화 가져오기 완료'); renderConversations(); selectConversation(conversations[0].id); } else alert('올바른 형식이 아닙니다.'); } catch(err){ alert('오류: 파일을 읽을 수 없습니다.'); } };
+          reader.readAsText(file);
+          e.target.value = '';
+        });
+
+        function exportAll(){
+          const data = JSON.stringify(conversations, null, 2);
+          const blob = new Blob([data], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = 'conversations.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        }
+
+        // keyboard shortcuts
+        window.addEventListener('keydown', (e)=>{
+          if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n'){ e.preventDefault(); newConvBtn.click(); }
+        });
+
+        // initial render
+        (function init(){
+          renderAIOptions();
+          // if settings.selectedAI not set, pick first
+          if(!settings.selectedAI) settings.selectedAI = AI_OPTIONS[0].id;
+          // ensure conversations is not empty
+          if(!conversations || !conversations.length) conversations = loadConversations();
+          // choose current
+          if(!currentId) currentId = conversations[0].id;
+          saveSettings(); saveConversations();
+          renderConversations();
+          selectConversation(currentId);
+        })();
+
+        // expose for debugging
+        window.aiChat = { createConversation, exportAll, importAll: ()=>filePicker.click(), getConversations: ()=>conversations };
+
+      })();
+    </script>
   </body>
 </html>
